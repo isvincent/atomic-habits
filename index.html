@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>原子習慣 · 自主學習養成器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f2937;
+    --soft:#6b7280;
+    --violet:#7c3aed;
+    --violet-d:#5b21b6;
+    --law1:#2563eb;   /* 顯而易見 */
+    --law2:#db2777;   /* 有吸引力 */
+    --law3:#16a34a;   /* 輕而易舉 */
+    --law4:#f59e0b;   /* 令人滿足 */
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --radius:20px;
+    --shadow:0 10px 30px rgba(31,41,55,.10);
+  }
+  *{box-sizing:border-box}
+  html{font-size:18px}
+  body{
+    margin:0; color:var(--ink);
+    font-family:"Noto Sans TC",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    line-height:1.7;
+    background:linear-gradient(125deg,#fef3c7 0%,#fce7f3 35%,#dbeafe 70%,#ddd6fe 100%);
+    background-size:300% 300%;
+    animation:bgmove 22s ease infinite;
+    min-height:100vh;
+  }
+  @keyframes bgmove{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+
+  .wrap{max-width:880px;margin:0 auto;padding:18px 16px 80px}
+
+  /* 標題 */
+  header.hero{
+    background:linear-gradient(135deg,var(--violet),#9333ea 55%,#c026d3);
+    color:#fff;border-radius:var(--radius);padding:26px 24px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  header.hero::after{
+    content:"⚛";position:absolute;right:-10px;bottom:-30px;font-size:170px;opacity:.13;
+  }
+  header.hero h1{margin:0 0 6px;font-size:2rem;font-weight:900;letter-spacing:.5px}
+  header.hero p{margin:0;font-size:1.1rem;opacity:.95}
+
+  /* 學生資訊列 */
+  .who{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;
+    background:rgba(255,255,255,.18);padding:12px;border-radius:14px;
+  }
+  .who label{font-size:.92rem;font-weight:700;display:block;margin-bottom:4px;opacity:.95}
+  .who .f{flex:1;min-width:150px}
+  .who input{
+    width:100%;border:none;border-radius:10px;padding:11px 12px;font-size:1.05rem;
+    font-family:inherit;background:#fff;color:var(--ink);
+  }
+
+  /* 分頁導覽 */
+  nav.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+  nav.tabs button{
+    flex:1;min-width:120px;cursor:pointer;border:none;font-family:inherit;
+    background:#fff;color:var(--soft);font-size:1rem;font-weight:700;
+    padding:12px 8px;border-radius:14px;box-shadow:0 4px 10px rgba(0,0,0,.06);
+    transition:transform .12s, background .2s, color .2s;
+  }
+  nav.tabs button .ico{display:block;font-size:1.5rem;margin-bottom:2px}
+  nav.tabs button:hover{transform:translateY(-2px)}
+  nav.tabs button.active{background:var(--violet);color:#fff;box-shadow:0 8px 18px rgba(124,58,237,.35)}
+
+  section.panel{display:none;animation:fade .35s ease}
+  section.panel.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+  .card h2{margin:0 0 10px;font-size:1.4rem;font-weight:900}
+  .card h3{margin:18px 0 8px;font-size:1.12rem;font-weight:700}
+  .hint{color:var(--soft);font-size:.96rem;margin:.2rem 0 .8rem}
+
+  .big-quote{
+    font-size:1.5rem;font-weight:900;line-height:1.5;
+    background:linear-gradient(90deg,var(--law2),var(--law4));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-align:center;margin:6px 0 4px;
+  }
+
+  /* 1% 複利計算器 */
+  .calc{background:linear-gradient(135deg,#fff7ed,#eef2ff);border-radius:16px;padding:18px;border:2px dashed #c7d2fe}
+  .slider-row{display:flex;align-items:center;gap:12px;margin:10px 0}
+  .slider-row input[type=range]{flex:1;accent-color:var(--violet);height:8px}
+  .day-pill{background:var(--violet);color:#fff;font-weight:900;border-radius:999px;padding:6px 14px;font-size:1.05rem;min-width:96px;text-align:center}
+  .calc-out{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .calc-box{flex:1;min-width:150px;border-radius:14px;padding:14px;color:#fff;text-align:center}
+  .calc-box .n{font-size:1.9rem;font-weight:900;line-height:1.2}
+  .calc-box .t{font-size:.95rem;opacity:.95}
+  .calc-up{background:linear-gradient(135deg,var(--law3),#0d9488)}
+  .calc-down{background:linear-gradient(135deg,#ef4444,#b91c1c)}
+  canvas#chart{width:100%;height:200px;display:block;margin-top:12px;background:#fff;border-radius:12px;border:1px solid var(--line)}
+
+  /* 四大法則卡 */
+  .laws{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:560px){.laws{grid-template-columns:1fr}}
+  .law{border-radius:16px;padding:16px;color:#fff;cursor:pointer;transition:transform .12s}
+  .law:hover{transform:translateY(-3px)}
+  .law h4{margin:0;font-size:1.15rem;font-weight:900}
+  .law .lead{font-size:.95rem;opacity:.95;margin:4px 0 0}
+  .law .more{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:.95rem}
+  .law.open .more{max-height:240px;margin-top:10px}
+  .law .tag{display:inline-block;background:rgba(255,255,255,.22);border-radius:8px;padding:2px 8px;font-size:.85rem;margin:4px 4px 0 0}
+  .law1{background:linear-gradient(135deg,var(--law1),#1d4ed8)}
+  .law2{background:linear-gradient(135deg,var(--law2),#be185d)}
+  .law3{background:linear-gradient(135deg,var(--law3),#15803d)}
+  .law4{background:linear-gradient(135deg,var(--law4),#d97706)}
+
+  /* 表單元件 */
+  label.fl{display:block;font-weight:700;margin:14px 0 6px;font-size:1.05rem}
+  input.tin,textarea.tin,select.tin{
+    width:100%;font-family:inherit;font-size:1.05rem;color:var(--ink);
+    border:2px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;transition:border .2s;
+  }
+  input.tin:focus,textarea.tin:focus,select.tin:focus{outline:none;border-color:var(--violet)}
+  textarea.tin{min-height:90px;resize:vertical}
+  .sentence{background:#faf5ff;border-radius:12px;padding:12px;border-left:5px solid var(--violet);font-size:1.02rem}
+  .sentence input{border:none;border-bottom:2px solid var(--violet);background:transparent;font-size:1.05rem;font-family:inherit;padding:2px 6px;min-width:120px;color:var(--violet-d);font-weight:700}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{background:#ede9fe;color:var(--violet-d);border:none;border-radius:999px;padding:7px 14px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+  .chip:hover{background:#ddd6fe}
+
+  .law-field{border-radius:12px;padding:14px;margin-top:10px;color:#fff}
+  .law-field label{font-weight:900;display:block;margin-bottom:6px}
+  .law-field input{width:100%;border:none;border-radius:10px;padding:10px 12px;font-size:1.02rem;font-family:inherit}
+
+  /* 按鈕 */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;font-family:inherit;
+    font-size:1.15rem;font-weight:900;color:#fff;border-radius:14px;padding:14px 26px;
+    background:linear-gradient(135deg,var(--violet),#9333ea);box-shadow:0 8px 18px rgba(124,58,237,.35);
+    transition:transform .12s,filter .2s;width:100%;justify-content:center;margin-top:18px;
+  }
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  .btn:active{transform:translateY(0)}
+  .btn.green{background:linear-gradient(135deg,var(--law3),#15803d);box-shadow:0 8px 18px rgba(22,163,74,.32)}
+
+  /* 打卡 */
+  .add-row{display:flex;gap:8px;margin-bottom:14px}
+  .add-row input{flex:1}
+  .add-row button{background:var(--law1);color:#fff;border:none;border-radius:12px;padding:0 20px;font-weight:900;font-size:1.5rem;cursor:pointer}
+  .habit{border:2px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:14px;transition:border .2s,background .2s}
+  .habit.done{border-color:var(--law3);background:#f0fdf4}
+  .check{width:54px;height:54px;border-radius:50%;border:3px solid var(--law3);background:#fff;color:var(--law3);font-size:1.8rem;cursor:pointer;flex-shrink:0;transition:transform .12s}
+  .check:hover{transform:scale(1.08)}
+  .habit.done .check{background:var(--law3);color:#fff}
+  .habit .info{flex:1;min-width:0}
+  .habit .nm{font-size:1.15rem;font-weight:700;word-break:break-word}
+  .streak{display:inline-block;background:#fff7ed;color:#c2410c;font-weight:900;border-radius:999px;padding:2px 10px;font-size:.9rem;margin-top:4px}
+  .week{display:flex;gap:5px;margin-top:8px}
+  .dot{width:20px;height:20px;border-radius:6px;background:#e5e7eb;font-size:.6rem;display:flex;align-items:center;justify-content:center;color:#9ca3af}
+  .dot.on{background:var(--law3);color:#fff}
+  .del{background:none;border:none;color:#cbd5e1;font-size:1.4rem;cursor:pointer;padding:4px}
+  .del:hover{color:#ef4444}
+
+  .moods{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .mood{font-size:1.8rem;background:#f3f4f6;border:3px solid transparent;border-radius:14px;padding:8px 12px;cursor:pointer;transition:transform .12s}
+  .mood:hover{transform:scale(1.1)}
+  .mood.sel{border-color:var(--violet);background:#f5f3ff}
+
+  .empty{text-align:center;color:var(--soft);padding:20px;font-size:1.02rem}
+
+  /* Toast & 彩帶 */
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(120px);
+    background:#111827;color:#fff;padding:14px 22px;border-radius:14px;font-weight:700;font-size:1.05rem;
+    box-shadow:0 12px 30px rgba(0,0,0,.3);transition:transform .35s;z-index:50;max-width:90vw;text-align:center}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+  #toast.err{background:#b91c1c}
+  .confetti{position:fixed;top:-12px;width:11px;height:14px;z-index:60;pointer-events:none;border-radius:2px}
+
+  footer{text-align:center;color:var(--soft);font-size:.9rem;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>⚛ 原子習慣 · 自主學習養成器</h1>
+    <p>用《原子習慣》的方法，把「想學好」變成每天自動發生的小行動。</p>
+    <div class="who">
+      <div class="f"><label>姓名</label><input id="sName" class="who-in" placeholder="你的名字"></div>
+      <div class="f"><label>班級座號</label><input id="sClass" class="who-in" placeholder="例如 高一三班 25 號"></div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-t="intro" class="active"><span class="ico">💡</span>認識原子習慣</button>
+    <button data-t="identity"><span class="ico">🪞</span>我的身分</button>
+    <button data-t="design"><span class="ico">🧩</span>習慣設計</button>
+    <button data-t="track"><span class="ico">✅</span>每日打卡</button>
+    <button data-t="reflect"><span class="ico">📝</span>學習反思</button>
+  </nav>
+
+  <!-- 1. 認識 -->
+  <section class="panel show" id="intro">
+    <div class="card">
+      <p class="big-quote">每天進步 1%，一年後你會強大約 37 倍。</p>
+      <p class="hint" style="text-align:center">習慣的力量來自「複利」。改變不必很大，只要每天一點點，方向對了，時間會替你加倍。</p>
+      <div class="calc">
+        <div class="slider-row">
+          <strong>經過天數</strong>
+          <input type="range" id="days" min="1" max="365" value="365">
+          <span class="day-pill" id="dayPill">365 天</span>
+        </div>
+        <div class="calc-out">
+          <div class="calc-box calc-up"><div class="n" id="up">37.78×</div><div class="t">每天進步 1%</div></div>
+          <div class="calc-box calc-down"><div class="n" id="down">0.03×</div><div class="t">每天退步 1%</div></div>
+        </div>
+        <canvas id="chart" width="800" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>行為改變四大法則</h2>
+      <p class="hint">想養成好習慣，就讓這四件事成立（點一下卡片看做法）：</p>
+      <div class="laws" id="lawCards">
+        <div class="law law1" data-k="1">
+          <h4>① 讓提示顯而易見</h4>
+          <p class="lead">看得到，才做得到。</p>
+          <div class="more">把課本、單字卡放在最顯眼的地方；用「執行意向」說清楚何時何地做。
+            <span class="tag">執行意向</span><span class="tag">環境設計</span><span class="tag">習慣堆疊</span></div>
+        </div>
+        <div class="law law2" data-k="2">
+          <h4>② 讓習慣有吸引力</h4>
+          <p class="lead">想做，才會持續。</p>
+          <div class="more">把「想做的事」綁在「該做的事」後面；加入一群也在努力學習的同學。
+            <span class="tag">誘惑綑綁</span><span class="tag">同儕氛圍</span></div>
+        </div>
+        <div class="law law3" data-k="3">
+          <h4>③ 讓行動輕而易舉</h4>
+          <p class="lead">越簡單，越容易開始。</p>
+          <div class="more">用「兩分鐘法則」縮到最小：先讀一頁、先寫一題就好；事先把環境準備好。
+            <span class="tag">兩分鐘法則</span><span class="tag">減少阻力</span></div>
+        </div>
+        <div class="law law4" data-k="4">
+          <h4>④ 讓獎賞令人滿足</h4>
+          <p class="lead">有成就感，大腦才想重來。</p>
+          <div class="more">完成就打勾、看見連續紀錄；給自己一個小獎勵。原則：絕不連續中斷兩次。
+            <span class="tag">習慣追蹤</span><span class="tag">立即獎賞</span></div>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:14px">👉 與其追求「目標」，不如先決定「你想成為誰」。下一頁開始設計吧！</p>
+    </div>
+  </section>
+
+  <!-- 2. 身分 -->
+  <section class="panel" id="identity">
+    <div class="card">
+      <h2>🪞 我想成為什麼樣的學習者？</h2>
+      <p class="hint">每一個小行動，都是在投下一票，告訴自己「我是這種人」。先寫下你想成為的身分。</p>
+      <div class="sentence">我是一個 <input id="idText" placeholder="會主動學習" style="min-width:200px"> 的人。</div>
+      <div class="chips" id="idChips">
+        <button class="chip">每天主動學習</button>
+        <button class="chip">把握零碎時間閱讀</button>
+        <button class="chip">遇到問題會自己查資料</button>
+        <button class="chip">會規劃進度並如期完成</button>
+        <button class="chip">專注不滑手機</button>
+      </div>
+      <button class="btn" data-submit="identity">💜 記下我的身分認同</button>
+    </div>
+  </section>
+
+  <!-- 3. 設計 -->
+  <section class="panel" id="design">
+    <div class="card">
+      <h2>🧩 設計我的學習習慣</h2>
+      <p class="hint">挑一個你想養成的學習習慣，用四大法則把它設計到「很難不做」。</p>
+
+      <label class="fl">習慣名稱</label>
+      <input id="hName" class="tin" placeholder="例如：每天背 10 個英文單字">
+
+      <h3>📍 執行意向（讓提示顯而易見）</h3>
+      <div class="sentence">我會於 <input id="iTime" placeholder="時間，如晚上8點">，在 <input id="iPlace" placeholder="地點，如書桌前">，進行 <input id="iAct" placeholder="行為，如背單字">。</div>
+
+      <h3>🔗 習慣堆疊</h3>
+      <div class="sentence">做完 <input id="sBefore" placeholder="現有習慣，如吃完晚餐"> 之後，我會 <input id="sAfter" placeholder="新習慣，如打開單字本"> 。</div>
+
+      <h3>⏱️ 兩分鐘版本（讓行動輕而易舉）</h3>
+      <input id="twoMin" class="tin" placeholder="把習慣縮到 2 分鐘內能完成，如：只背 2 個單字就好">
+
+      <h3>四大法則小設計</h3>
+      <div class="law-field law1"><label>① 顯而易見：我要把提示放在哪裡？</label><input id="d1" placeholder="如：把單字本放在枕頭上"></div>
+      <div class="law-field law2"><label>② 有吸引力：我要把它和什麼喜歡的事綁在一起？</label><input id="d2" placeholder="如：邊聽喜歡的音樂邊背"></div>
+      <div class="law-field law3"><label>③ 輕而易舉：我要怎麼減少阻力？</label><input id="d3" placeholder="如：前一晚先翻到要背的頁數"></div>
+      <div class="law-field law4"><label>④ 令人滿足：完成後給自己什麼獎賞？</label><input id="d4" placeholder="如：打勾＋看一支短影片"></div>
+
+      <button class="btn green" data-submit="design">🧩 送出我的習慣藍圖</button>
+    </div>
+  </section>
+
+  <!-- 4. 打卡 -->
+  <section class="panel" id="track">
+    <div class="card">
+      <h2>✅ 今日習慣打卡</h2>
+      <p class="hint">完成就點圓圈打勾。原則：<b>絕不連續中斷兩次</b>！連續天數會自動累積。</p>
+      <div class="add-row">
+        <input id="newHabit" class="tin" placeholder="新增一個要追蹤的習慣">
+        <button id="addBtn" title="新增">＋</button>
+      </div>
+      <div id="habitList"></div>
+
+      <h3>今天的心情如何？</h3>
+      <div class="moods" id="moodTrack">
+        <button class="mood" data-m="😄 充滿幹勁">😄</button>
+        <button class="mood" data-m="🙂 還不錯">🙂</button>
+        <button class="mood" data-m="😐 普通">😐</button>
+        <button class="mood" data-m="😮‍💨 有點累">😮‍💨</button>
+        <button class="mood" data-m="😣 卡關了">😣</button>
+      </div>
+      <button class="btn green" data-submit="track">📤 送出今日打卡紀錄</button>
+    </div>
+  </section>
+
+  <!-- 5. 反思 -->
+  <section class="panel" id="reflect">
+    <div class="card">
+      <h2>📝 每週學習反思</h2>
+      <p class="hint">回顧這週的習慣，找出可以調整的地方，讓系統越來越順。</p>
+      <label class="fl">這週哪個習慣進行得最順利？為什麼？</label>
+      <textarea id="r1" class="tin"></textarea>
+      <label class="fl">哪裡卡關了？是哪一條法則沒做好？</label>
+      <textarea id="r2" class="tin"></textarea>
+      <label class="fl">下週我想怎麼調整？（可指定要加強哪條法則）</label>
+      <textarea id="r3" class="tin"></textarea>
+
+      <h3>本週整體感受</h3>
+      <div class="moods" id="moodReflect">
+        <button class="mood" data-m="😄 很有收穫">😄</button>
+        <button class="mood" data-m="🙂 穩定前進">🙂</button>
+        <button class="mood" data-m="😐 普通">😐</button>
+        <button class="mood" data-m="😣 需要調整">😣</button>
+      </div>
+      <button class="btn" data-submit="reflect">📝 送出本週反思</button>
+    </div>
+  </section>
+
+  <footer>《原子習慣》自主學習工具 · 資料將同步至班級 Google 試算表</footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ======== 設定 ======== */
+const CONFIG = {
+  // ★ 若把此網頁放在 GitHub Pages 等外部主機，請貼上 Apps Script 的「網頁應用程式」網址。
+  //   若直接用 Apps Script 開啟本網頁，這裡可留空（會自動用 google.script.run 送出）。
+  WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbwYQPQgqwP9xvHgZgrWXDbXv3H2qmCC9ZDs5IWkdH-yfbDIFh6XFoxoFSNf7iQDZB0i/exec'   // 例如：'https://script.google.com/macros/s/AKfyc.../exec'
+};
+
+/* ======== 工具 ======== */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const STORE = 'atomic_habits_v1';
+
+function load(){ try{return JSON.parse(localStorage.getItem(STORE))||{habits:[],name:'',classNo:''}}catch(e){return {habits:[],name:'',classNo:''}} }
+function save(s){ try{localStorage.setItem(STORE, JSON.stringify(s))}catch(e){} }
+let state = load();
+
+function fmt(d){ const z=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate()); }
+const TODAY = fmt(new Date());
+
+/* 還原姓名 / 班級 */
+if(state.name) $('#sName').value = state.name;
+if(state.classNo) $('#sClass').value = state.classNo;
+$('#sName').addEventListener('input', e=>{state.name=e.target.value;save(state)});
+$('#sClass').addEventListener('input', e=>{state.classNo=e.target.value;save(state)});
+
+/* ======== 分頁切換 ======== */
+$('#tabs').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  $$('#tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  $$('.panel').forEach(p=>p.classList.remove('show'));
+  $('#'+b.dataset.t).classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* ======== 1% 複利計算器 ======== */
+const daysEl = $('#days'), chart = $('#chart'), ctx = chart.getContext('2d');
+function pow(base,n){ return Math.pow(base,n); }
+function renderCalc(){
+  const n = +daysEl.value;
+  $('#dayPill').textContent = n + ' 天';
+  const up = pow(1.01,n), down = pow(0.99,n);
+  $('#up').textContent = up.toFixed(2) + '×';
+  $('#down').textContent = (down<0.01? down.toFixed(3) : down.toFixed(2)) + '×';
+  drawChart(n, up);
+}
+function drawChart(n, maxUp){
+  const dpr = window.devicePixelRatio||1;
+  const w = chart.clientWidth, h = chart.clientHeight;
+  chart.width = w*dpr; chart.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  const pad=28, top=14;
+  const maxY = Math.max(2, maxUp);
+  const X = i => pad + (w-pad*2) * (i/n);
+  const Y = v => (h-22) - ((h-22-top) * (Math.min(v,maxY)/maxY));
+  // baseline 1
+  ctx.strokeStyle='#e5e7eb'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad,Y(1)); ctx.lineTo(w-pad,Y(1)); ctx.stroke();
+  ctx.fillStyle='#9ca3af'; ctx.font='12px sans-serif'; ctx.fillText('起點 1×', pad, Y(1)-6);
+  // up curve
+  function curve(base,color,wd){
+    ctx.strokeStyle=color; ctx.lineWidth=wd; ctx.beginPath();
+    for(let i=0;i<=n;i++){ const v=pow(base,i); const x=X(i), y=Y(v); i?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.stroke();
+  }
+  curve(0.99,'#ef4444',2.5);
+  curve(1.01,'#16a34a',3);
+  // dots end
+  ctx.fillStyle='#16a34a'; ctx.beginPath(); ctx.arc(X(n),Y(pow(1.01,n)),5,0,7); ctx.fill();
+  ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(X(n),Y(pow(0.99,n)),5,0,7); ctx.fill();
+}
+daysEl.addEventListener('input', renderCalc);
+window.addEventListener('resize', ()=>renderCalc());
+renderCalc();
+
+/* ======== 四大法則展開 ======== */
+$('#lawCards').addEventListener('click', e=>{
+  const c = e.target.closest('.law'); if(!c) return; c.classList.toggle('open');
+});
+
+/* ======== 身分 chips ======== */
+$('#idChips').addEventListener('click', e=>{
+  if(e.target.classList.contains('chip')){ $('#idText').value = e.target.textContent; }
+});
+
+/* ======== 心情選擇 ======== */
+function bindMood(box){
+  box.addEventListener('click', e=>{
+    const m = e.target.closest('.mood'); if(!m) return;
+    box.querySelectorAll('.mood').forEach(x=>x.classList.remove('sel'));
+    m.classList.add('sel'); box.dataset.val = m.dataset.m;
+  });
+}
+bindMood($('#moodTrack')); bindMood($('#moodReflect'));
+
+/* ======== 打卡：習慣管理 ======== */
+function computeStreak(history){
+  const set = new Set(history); let streak=0; let d=new Date();
+  if(!set.has(fmt(d))) d.setDate(d.getDate()-1);   // 今天還沒打也不歸零
+  while(set.has(fmt(d))){ streak++; d.setDate(d.getDate()-1); }
+  return streak;
+}
+function last7(){ const arr=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); arr.push(fmt(d)); } return arr; }
+const WD=['日','一','二','三','四','五','六'];
+
+function renderHabits(){
+  const list = $('#habitList');
+  if(!state.habits.length){ list.innerHTML='<div class="empty">還沒有習慣，先在上面新增一個吧！<br>也可以到「習慣設計」分頁設計後再來追蹤 🌱</div>'; return; }
+  list.innerHTML='';
+  state.habits.forEach(h=>{
+    const done = (h.history||[]).includes(TODAY);
+    const streak = computeStreak(h.history||[]);
+    const el = document.createElement('div');
+    el.className = 'habit'+(done?' done':'');
+    const week = last7().map(d=>{
+      const on=(h.history||[]).includes(d); const wd=WD[new Date(d).getDay()];
+      return `<div class="dot ${on?'on':''}">${wd}</div>`;
+    }).join('');
+    el.innerHTML =
+      `<button class="check" data-id="${h.id}">${done?'✓':''}</button>
+       <div class="info">
+         <div class="nm">${escapeHtml(h.name)}</div>
+         <span class="streak">🔥 連續 ${streak} 天</span>
+         <div class="week">${week}</div>
+       </div>
+       <button class="del" data-del="${h.id}" title="刪除">🗑️</button>`;
+    list.appendChild(el);
+  });
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function addHabit(name){
+  name=(name||'').trim(); if(!name) return;
+  state.habits.push({id:'h'+Date.now(), name, history:[]}); save(state); renderHabits();
+}
+$('#addBtn').addEventListener('click', ()=>{ addHabit($('#newHabit').value); $('#newHabit').value=''; });
+$('#newHabit').addEventListener('keydown', e=>{ if(e.key==='Enter'){ addHabit(e.target.value); e.target.value=''; }});
+
+$('#habitList').addEventListener('click', e=>{
+  const ck = e.target.closest('.check');
+  const dl = e.target.closest('.del');
+  if(ck){
+    const h = state.habits.find(x=>x.id===ck.dataset.id); if(!h) return;
+    h.history = h.history||[];
+    const i = h.history.indexOf(TODAY);
+    if(i>=0){ h.history.splice(i,1); } else { h.history.push(TODAY); celebrate(); }
+    save(state); renderHabits();
+  }
+  if(dl){
+    state.habits = state.habits.filter(x=>x.id!==dl.dataset.del); save(state); renderHabits();
+  }
+});
+
+/* 把「習慣設計」自動帶進打卡清單 */
+function maybeImportDesigned(name){
+  if(name && !state.habits.some(h=>h.name===name)){ addHabit(name); }
+}
+renderHabits();
+
+/* ======== 送出資料 ======== */
+function isGS(){ return (typeof google!=='undefined') && google.script && google.script.run; }
+function sendToServer(record){
+  return new Promise((resolve,reject)=>{
+    if(isGS()){
+      google.script.run.withSuccessHandler(r=>resolve(r)).withFailureHandler(err=>reject(err)).submitData(record);
+    }else if(CONFIG.WEB_APP_URL){
+      fetch(CONFIG.WEB_APP_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(record)})
+        .then(()=>resolve({ok:true,mode:'no-cors'})).catch(err=>reject(err));
+    }else{
+      reject(new Error('尚未設定 Web App 網址（CONFIG.WEB_APP_URL）'));
+    }
+  });
+}
+
+function baseInfo(){
+  return { name:$('#sName').value.trim(), classNo:$('#sClass').value.trim() };
+}
+
+const builders = {
+  identity(){
+    const identity = $('#idText').value.trim();
+    if(!identity) return {err:'請先填寫你想成為的身分'};
+    return {type:'身分認同', identity};
+  },
+  design(){
+    const habitName = $('#hName').value.trim();
+    if(!habitName) return {err:'請先填寫習慣名稱'};
+    const intention = `我會於 ${$('#iTime').value||'＿'}，在 ${$('#iPlace').value||'＿'}，進行 ${$('#iAct').value||'＿'}`;
+    const stacking = `做完 ${$('#sBefore').value||'＿'} 之後，我會 ${$('#sAfter').value||'＿'}`;
+    return {type:'習慣設計', habitName, intention, stacking, twoMin:$('#twoMin').value.trim(),
+      law1:$('#d1').value.trim(), law2:$('#d2').value.trim(), law3:$('#d3').value.trim(), law4:$('#d4').value.trim()};
+  },
+  track(){
+    if(!state.habits.length) return {err:'還沒有任何習慣可以打卡喔'};
+    const items = state.habits.map(h=>({名稱:h.name, 今日完成:(h.history||[]).includes(TODAY)}));
+    const doneCount = items.filter(x=>x.今日完成).length;
+    return {type:'每日打卡', dailyData:JSON.stringify(items), doneCount, mood:$('#moodTrack').dataset.val||''};
+  },
+  reflect(){
+    const r1=$('#r1').value.trim(), r2=$('#r2').value.trim(), r3=$('#r3').value.trim();
+    if(!r1 && !r2 && !r3) return {err:'請至少填寫一題反思'};
+    const reflection = `【最順利】${r1}\n【卡關】${r2}\n【下週調整】${r3}`;
+    return {type:'每週反思', reflection, mood:$('#moodReflect').dataset.val||''};
+  }
+};
+
+document.body.addEventListener('click', e=>{
+  const b = e.target.closest('[data-submit]'); if(!b) return;
+  const info = baseInfo();
+  if(!info.name){ toast('請先在最上方填寫「姓名」', true); $('#sName').focus(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+  const built = builders[b.dataset.submit]();
+  if(built.err){ toast(built.err, true); return; }
+
+  // 設計完成 → 自動加入打卡清單
+  if(b.dataset.submit==='design' && built.habitName) maybeImportDesigned(built.habitName);
+
+  const record = Object.assign({}, info, built);
+  b.disabled = true; const old=b.innerHTML; b.innerHTML='⏳ 傳送中…';
+  sendToServer(record).then(()=>{
+    toast('✅ 已成功記錄到班級試算表！'); celebrate();
+  }).catch(err=>{
+    toast('⚠️ 傳送失敗：'+(err.message||err), true);
+  }).finally(()=>{ b.disabled=false; b.innerHTML=old; });
+});
+
+/* ======== Toast ======== */
+let toastTimer;
+function toast(msg, isErr){
+  const t=$('#toast'); t.textContent=msg; t.className='show'+(isErr?' err':'');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.className='', 3200);
+}
+
+/* ======== 彩帶（讓獎賞令人滿足）======== */
+function celebrate(){
+  const colors=['#7c3aed','#db2777','#16a34a','#f59e0b','#2563eb'];
+  for(let i=0;i<26;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[i%colors.length];
+    c.style.transform='rotate('+Math.random()*360+'deg)';
+    document.body.appendChild(c);
+    const dur=900+Math.random()*900;
+    c.animate([{transform:c.style.transform+' translateY(0)',opacity:1},
+               {transform:'translateY('+(window.innerHeight+40)+'px) rotate(540deg)',opacity:.2}],
+               {duration:dur,easing:'cubic-bezier(.3,.6,.4,1)'}).onfinish=()=>c.remove();
+  }
+}
+</script>
+</body>
+</html>
